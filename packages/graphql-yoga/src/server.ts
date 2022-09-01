@@ -59,6 +59,8 @@ import { useResultProcessor } from './plugins/useResultProcessor.js'
 import {
   isRegularResult,
   processRegularResult,
+  RegularResultContentType,
+  RegularResultContentTypes,
 } from './plugins/resultProcessor/regular.js'
 import {
   isPushResult,
@@ -337,15 +339,18 @@ export class YogaServer<
         parse: parsePOSTFormUrlEncodedRequest,
       }),
       // Middlewares after the GraphQL execution
+      // useResultProcessor({
+      //   contentTypes: ['multipart/mixed'],
+      //   match: isMultipartResult,
+      //   processResult: processMultipartResult,
+      // }),
+      // useResultProcessor({
+      //   contentTypes: ['text/event-stream'],
+      //   match: isPushResult,
+      //   processResult: processPushResult,
+      // }),
       useResultProcessor({
-        match: isMultipartResult,
-        processResult: processMultipartResult,
-      }),
-      useResultProcessor({
-        match: isPushResult,
-        processResult: processPushResult,
-      }),
-      useResultProcessor({
+        contentTypes: RegularResultContentTypes,
         match: isRegularResult,
         processResult: processRegularResult,
       }),

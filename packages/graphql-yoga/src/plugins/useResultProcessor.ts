@@ -1,12 +1,15 @@
 import { Plugin, ResultProcessor, ResultProcessorInput } from './types.js'
 
-export interface ResultProcessorPluginOptions {
+export interface ResultProcessorPluginOptions<
+  MediaType extends string = string,
+> {
+  mediaTypes: MediaType[]
   processResult: ResultProcessor
-  match?(request: Request, result: ResultProcessorInput): boolean
+  match?(request: Request, result: ResultProcessorInput): MediaType | null
 }
 
-export function useResultProcessor(
-  options: ResultProcessorPluginOptions,
+export function useResultProcessor<MediaType extends string = string>(
+  options: ResultProcessorPluginOptions<MediaType>,
 ): Plugin {
   const matchFn = options.match || (() => true)
   return {
