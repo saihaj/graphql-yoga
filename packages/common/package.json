@@ -1,6 +1,6 @@
 {
   "name": "@graphql-yoga/common",
-  "version": "2.12.3",
+  "version": "2.12.11",
   "description": "",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/typings/index.d.ts",
+        "types": "./dist/typings/index.d.cts",
         "default": "./dist/cjs/index.js"
       },
       "import": {
@@ -41,7 +41,7 @@
     },
     "./*": {
       "require": {
-        "types": "./dist/typings/*.d.ts",
+        "types": "./dist/typings/*.d.cts",
         "default": "./dist/cjs/*.js"
       },
       "import": {
@@ -64,20 +64,20 @@
     "access": "public"
   },
   "dependencies": {
-    "@envelop/core": "^2.4.0",
-    "@envelop/parser-cache": "^4.4.0",
-    "@envelop/validation-cache": "^4.4.0",
+    "@envelop/core": "^2.5.0",
+    "@envelop/parser-cache": "^4.6.0",
+    "@envelop/validation-cache": "^4.6.0",
     "@graphql-typed-document-node/core": "^3.1.1",
-    "@graphql-tools/schema": "^8.5.0",
+    "@graphql-tools/schema": "^9.0.0",
     "@graphql-tools/utils": "^8.8.0",
-    "@graphql-yoga/subscription": "^2.2.2",
-    "cross-undici-fetch": "^0.4.13",
+    "@graphql-yoga/subscription": "^2.2.3",
+    "@whatwg-node/fetch": "^0.3.0",
     "dset": "^3.1.1",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
-    "@types/node": "16.11.45",
-    "html-minifier-terser": "7.0.0-beta.0"
+    "@types/node": "16.11.56",
+    "html-minifier-terser": "7.0.0"
   },
   "peerDependencies": {
     "graphql": "^15.2.0 || ^16.0.0"

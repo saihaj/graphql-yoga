@@ -1,20 +1,20 @@
 {
   "name": "cloudflare-advanced",
-  "version": "0.7.3",
+  "version": "0.7.11",
   "private": true,
   "scripts": {
     "start": "wrangler dev",
     "check": "tsc --pretty --noEmit"
   },
   "dependencies": {
-    "@graphql-yoga/common": "2.12.3",
     "@cloudflare/workers-types": "^3.0.0",
-    "graphql": "16.5.0"
+    "@graphql-yoga/common": "2.12.11",
+    "graphql": "16.6.0"
   },
   "devDependencies": {
     "@cloudflare/wrangler": "1.19.12",
-    "typescript": "4.7.4",
     "ts-loader": "9.3.1",
-    "webpack": "5.73.0"
+    "typescript": "4.8.2",
+    "webpack": "5.74.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@graphql-yoga/render-graphiql",
-  "version": "2.13.3",
+  "version": "2.13.11",
   "description": "",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/typings/index.d.ts",
+        "types": "./dist/typings/index.d.cts",
         "default": "./dist/cjs/index.js"
       },
       "import": {
@@ -41,7 +41,7 @@
     },
     "./*": {
       "require": {
-        "types": "./dist/typings/*.d.ts",
+        "types": "./dist/typings/*.d.cts",
         "default": "./dist/cjs/*.js"
       },
       "import": {
@@ -64,7 +64,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@graphql-yoga/common": "^2.12.3"
+    "@graphql-yoga/common": "^2.12.11"
   },
   "type": "module"
 }

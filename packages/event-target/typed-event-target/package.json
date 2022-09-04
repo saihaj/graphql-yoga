@@ -1,6 +1,6 @@
 {
   "name": "@graphql-yoga/typed-event-target",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/typings/index.d.ts",
+        "types": "./dist/typings/index.d.cts",
         "default": "./dist/cjs/index.js"
       },
       "import": {

@@ -31,7 +31,7 @@ import {
   RequestParser,
   ResultProcessor,
 } from './plugins/types.js'
-import * as crossUndiciFetch from 'cross-undici-fetch'
+import * as crossUndiciFetch from '@whatwg-node/fetch'
 import { processRequest as processGraphQLParams } from './processRequest.js'
 import { defaultYogaLogger, titleBold, YogaLogger } from './logger.js'
 import { CORSPluginOptions, useCORS } from './plugins/useCORS.js'
@@ -79,7 +79,7 @@ import { useCheckGraphQLQueryParam } from './plugins/requestValidation/useCheckG
 import { useHTTPValidationError } from './plugins/requestValidation/useHTTPValidationError.js'
 import { usePreventMutationViaGET } from './plugins/requestValidation/usePreventMutationViaGET.js'
 
-interface OptionsWithPlugins<TContext> {
+interface OptionsWithPlugins<TContext extends Record<string, any>> {
   /**
    * Envelop Plugins
    * @see https://envelop.dev/plugins
@@ -381,20 +381,27 @@ export class YogaServer<
         processResult: processMultipartResult as ResultProcessor,
       }),
       ...(options?.plugins ?? []),
-
-      // So the user can manipulate the query parameter
       useCheckGraphQLQueryParam(),
-      // We handle validation errors at the end
-      useHTTPValidationError(),
-      // We make sure that the user doesn't send a mutation with GET
-      usePreventMutationViaGET(),
-
-      enableIf(
-        !!maskedErrors,
-        useMaskedErrors(
-          typeof maskedErrors === 'object' ? maskedErrors : undefined,
-        ),
-      ),
+      // To make sure those are called at the end
+      {
+        onPluginInit({ addPlugin }) {
+          addPlugin(
+            // We make sure that the user doesn't send a mutation with GET
+            usePreventMutationViaGET(),
+          )
+          if (!!maskedErrors) {
+            addPlugin(
+              useMaskedErrors(
+                typeof maskedErrors === 'object' ? maskedErrors : undefined,
+              ),
+            )
+          }
+          addPlugin(
+            // We handle validation errors at the end
+            useHTTPValidationError(),
+          )
+        },
+      },
     ]
 
     this.getEnveloped = envelop({
@@ -635,12 +642,16 @@ export class YogaServer<
   }
 }
 
-export type YogaServerInstance<TServerContext, TUserContext, TRootValue> =
-  YogaServer<TServerContext, TUserContext, TRootValue> &
-    (
-      | WindowOrWorkerGlobalScope['fetch']
-      | ((context: { request: Request }) => Promise<Response>)
-    )
+export type YogaServerInstance<
+  TServerContext extends Record<string, any>,
+  TUserContext extends Record<string, any>,
+  TRootValue,
+> = YogaServer<TServerContext, TUserContext, TRootValue> &
+  (
+    | WindowOrWorkerGlobalScope['fetch']
+    | ((request: Request, serverContext?: TServerContext) => Promise<Response>)
+    | ((context: { request: Request }) => Promise<Response>)
+  )
 
 export function createServer<
   TServerContext extends Record<string, any> = {},

@@ -15,7 +15,7 @@ import 'json-bigint-patch'
 import http from 'http'
 import { useLiveQuery } from '@envelop/live-query'
 import { InMemoryLiveQueryStore } from '@n1ru4l/in-memory-live-query-store'
-import { AbortController, fetch, File, FormData } from 'cross-undici-fetch'
+import { AbortController, fetch, File, FormData } from '@whatwg-node/fetch'
 import { Plugin } from '@graphql-yoga/common'
 import { ExecutionResult } from '@graphql-tools/utils'
 
@@ -192,6 +192,45 @@ describe('Masked Error Option', () => {
       },
     })
   })
+
+  it('can mask validation error', async () => {
+    const yoga = createServer({
+      schema,
+      logging: false,
+      maskedErrors: {
+        handleValidationErrors: true,
+        isDev: true,
+      },
+    })
+
+    const response = await request(yoga).post('/graphql').send({
+      query: '{ bubatzbieber }',
+    })
+    const body = JSON.parse(response.text)
+    expect(body).toMatchObject({
+      data: null,
+      errors: [
+        {
+          locations: [
+            {
+              column: 3,
+              line: 1,
+            },
+          ],
+          message: 'Unexpected error.',
+        },
+      ],
+    })
+    const { extensions } = body.errors![0]
+    expect(extensions).toMatchObject({
+      originalError: {
+        message: 'Cannot query field "bubatzbieber" on type "Query".',
+        stack: expect.stringContaining(
+          'GraphQLError: Cannot query field "bubatzbieber" on type "Query"',
+        ),
+      },
+    })
+  })
 })
 
 describe('Context error', () => {
@@ -287,6 +326,37 @@ describe('Context error', () => {
           message: 'I like turtles',
           extensions: {
             foo: 1,
+          },
+        },
+      ],
+    })
+    expect(response.status).toEqual(200)
+  })
+
+  it('error thrown within context factory is exposed via originalError extension field in dev mode', async () => {
+    const yoga = createServer({
+      logging: false,
+      context: () => {
+        throw new Error('I am the original error.')
+      },
+      maskedErrors: {
+        isDev: true,
+      },
+    })
+    const response = await request(yoga).post('/graphql').send({
+      query: '{ greetings }',
+    })
+    const body = JSON.parse(response.text)
+    expect(body).toStrictEqual({
+      data: null,
+      errors: [
+        {
+          message: 'Unexpected error.',
+          extensions: {
+            originalError: {
+              message: 'I am the original error.',
+              stack: expect.stringContaining('Error: I am the original error.'),
+            },
           },
         },
       ],
@@ -716,6 +786,18 @@ describe('Incremental Delivery', () => {
 
     expect(getCounterValue()).toBe(counterValue2)
   })
+
+  it('should accept POST requests as "application/json" by default if content-type is not present', async () => {
+    const response = await yoga.fetch(yoga.getServerUrl(), {
+      method: 'POST',
+      body: JSON.stringify({ query: '{ ping }' }),
+    })
+
+    expect(response.status).toBe(200)
+    const body = await response.json()
+    expect(body.errors).toBeUndefined()
+    expect(body.data.ping).toBe('pong')
+  })
 })
 
 function md5File(path: string) {
@@ -1003,10 +1085,10 @@ test('defer/stream is closed properly', async () => {
       if (
         valueAsString.includes(`Content-Type: application/json; charset=utf-8`)
       ) {
+        abortCtrl.abort()
         break
       }
     }
-    abortCtrl.abort()
     await new Promise((res) => setTimeout(res, 300))
     expect(fakeIterator.return).toBeCalled()
   } finally {

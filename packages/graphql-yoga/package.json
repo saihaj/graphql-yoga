@@ -1,6 +1,6 @@
 {
   "name": "graphql-yoga",
-  "version": "2.13.4",
+  "version": "2.13.12",
   "description": "",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/typings/index.d.ts",
+        "types": "./dist/typings/index.d.cts",
         "default": "./dist/cjs/index.js"
       },
       "import": {
@@ -54,13 +54,13 @@
   "dependencies": {
     "@graphql-tools/code-file-loader": "^7.3.0",
     "@graphql-tools/mock": "^8.7.0",
-    "@graphql-yoga/node": "^2.13.4",
+    "@graphql-yoga/node": "^2.13.12",
     "graphql-config": "^4.1.0",
     "tslib": "^2.3.1",
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@types/yargs": "17.0.10"
+    "@types/yargs": "17.0.12"
   },
   "peerDependencies": {
     "graphql": "^15.2.0 || ^16.0.0"

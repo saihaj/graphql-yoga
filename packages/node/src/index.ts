@@ -10,7 +10,7 @@ import { getNodeRequest, NodeRequest, sendNodeResponse } from './http-utils.js'
 import { YogaServer } from '@graphql-yoga/common'
 import type { YogaNodeServerOptions, AddressInfo } from './types.js'
 import { platform, release } from 'os'
-import { create } from 'cross-undici-fetch'
+import { createFetch } from '@whatwg-node/fetch'
 
 class YogaNodeServer<
   TServerContext extends Record<string, any>,
@@ -35,7 +35,7 @@ class YogaNodeServer<
       multipart: options?.multipart !== false,
       fetchAPI:
         options?.fetchAPI ??
-        create({
+        createFetch({
           useNodeFetch: true,
           formDataLimits:
             typeof options?.multipart === 'object'
@@ -208,9 +208,12 @@ export function createServer<
   })
 }
 
-export type YogaNodeServerInstance<TServerContext, TUserContext, TRootValue> =
-  YogaNodeServer<TServerContext, TUserContext, TRootValue> &
-    YogaNodeServer<TServerContext, TUserContext, TRootValue>['requestListener']
+export type YogaNodeServerInstance<
+  TServerContext extends Record<string, any>,
+  TUserContext extends Record<string, any>,
+  TRootValue,
+> = YogaNodeServer<TServerContext, TUserContext, TRootValue> &
+  YogaNodeServer<TServerContext, TUserContext, TRootValue>['requestListener']
 
 export * from './types.js'
 export {
